@@ -1,0 +1,7 @@
+services:
+  db:
+    ports: !override
+      - "55432:5432"
+  api:
+    ports: !override
+      - "8001:8000"

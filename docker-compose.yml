@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:16
+    command: ["postgres", "-c", "max_connections=200"]
+    environment:
+      POSTGRES_DB: wallet
+      POSTGRES_USER: wallet
+      POSTGRES_PASSWORD: wallet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+      - ./migrations/002_fee_and_hold_accounts.sql:/docker-entrypoint-initdb.d/002_fee_and_hold_accounts.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wallet -d wallet"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    image: postgres:16
+    environment:
+      PGPASSWORD: wallet
+    command:
+      - psql
+      - -h
+      - db
+      - -U
+      - wallet
+      - -d
+      - wallet
+      - -v
+      - ON_ERROR_STOP=1
+      - -f
+      - /migrations/002_fee_and_hold_accounts.sql
+    volumes:
+      - ./migrations:/migrations:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql://wallet:wallet@db:5432/wallet
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-local-admin-token}
+      TRANSFER_FEE_PAISE: ${TRANSFER_FEE_PAISE:-100}
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    build: .
+    command: python -m app.worker
+    environment:
+      DATABASE_URL: postgresql://wallet:wallet@db:5432/wallet
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-local-admin-token}
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data:
