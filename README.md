@@ -136,3 +136,4 @@ steps; the video itself must be recorded and submitted separately.
 <img width="654" height="87" alt="03-seed-transfers" src="https://github.com/user-attachments/assets/42b64f4d-3486-46b6-809f-22a31a779d57" />
 <img width="653" height="210" alt="02-integration-tests" src="https://github.com/user-attachments/assets/cdaa3390-73f3-4ff3-abf2-5ef5b4f9ba3a" />
 <img width="665" height="264" alt="01-api-health" src="https://github.com/user-attachments/assets/2e3132ee-be3e-4922-bf51-42bf84c89d22" />
+<img width="788" height="422" alt="Docker" src="https://github.com/user-attachments/assets/344240a3-a3a8-4747-898a-fa4601894732" />
