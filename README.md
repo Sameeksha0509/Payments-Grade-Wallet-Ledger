@@ -127,3 +127,12 @@ Add real authentication/authorization, operational secrets management, rate limi
 key expiration, richer reversal policies, provider timeouts/retries and observability,
 and a production-grade LLM evaluation set. The demo runbook documents the recording
 steps; the video itself must be recorded and submitted separately.
+<img width="574" height="337" alt="09-statement-qa" src="https://github.com/user-attachments/assets/95efd0c8-5d9d-4f6b-b2eb-8855fd2389c6" />
+<img width="488" height="177" alt="08-risk-hold-audit-history" src="https://github.com/user-attachments/assets/7823f533-aed5-47de-a773-534fcc8817ff" />
+<img width="353" height="434" alt="07-idempotency-retry" src="https://github.com/user-attachments/assets/58aee72a-eee8-40e6-a3ec-aedab1e7a063" />
+<img width="355" height="435" alt="06-transfer-demo" src="https://github.com/user-attachments/assets/d0d224c8-1525-413e-93c9-cea65200ba85" />
+<img width="539" height="253" alt="05-reconciliation" src="https://github.com/user-attachments/assets/ea2cc86f-acb2-427e-97e1-89c380565c35" />
+<img width="656" height="103" alt="04-ledger-integrity" src="https://github.com/user-attachments/assets/ee04c0e1-bfd0-4f18-8069-cd22d0356815" />
+<img width="654" height="87" alt="03-seed-transfers" src="https://github.com/user-attachments/assets/42b64f4d-3486-46b6-809f-22a31a779d57" />
+<img width="653" height="210" alt="02-integration-tests" src="https://github.com/user-attachments/assets/cdaa3390-73f3-4ff3-abf2-5ef5b4f9ba3a" />
+<img width="665" height="264" alt="01-api-health" src="https://github.com/user-attachments/assets/2e3132ee-be3e-4922-bf51-42bf84c89d22" />
