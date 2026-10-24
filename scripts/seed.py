@@ -63,6 +63,28 @@ def main(target_transfers=100000):
                 )
                 return
 
+            
+            # Cache seed wallet IDs once instead of ranking them per batch.
+            seed_wallet_ids = [
+                row["id"]
+                for row in conn.execute(
+                    """
+                    SELECT a.id
+                    FROM accounts a
+                    JOIN users u ON u.id = a.user_id
+                    WHERE u.email LIKE 'seed%@example.test'
+                      AND a.account_type = 'wallet'
+                      AND a.name IN ('Main wallet', 'Savings wallet')
+                    ORDER BY a.id
+                    """
+                ).fetchall()
+            ]
+
+            if len(seed_wallet_ids) != 2000:
+                raise RuntimeError(
+                    f"Expected 2,000 seed wallets, found {len(seed_wallet_ids)}"
+                )
+
             for start in range(
                 existing_transfers + 1,
                 target_transfers + 1,
@@ -72,17 +94,7 @@ def main(target_transfers=100000):
 
                 conn.execute(
                     """
-                    WITH seed_wallets AS (
-                        SELECT
-                            a.id,
-                            row_number() OVER (ORDER BY a.id) AS n
-                        FROM accounts a
-                        JOIN users u ON u.id = a.user_id
-                        WHERE u.email LIKE 'seed%%@example.test'
-                          AND a.account_type = 'wallet'
-                          AND a.name IN ('Main wallet', 'Savings wallet')
-                    ),
-                    cash_in AS (
+                    WITH cash_in AS (
                         SELECT id
                         FROM accounts
                         WHERE user_id IS NULL
@@ -113,7 +125,8 @@ def main(target_transfers=100000):
                         FROM generate_series(
                             %s::bigint, %s::bigint
                         ) AS g(n)
-                        JOIN seed_wallets wallet
+                        JOIN unnest(%s::bigint[]) WITH ORDINALITY
+                            AS wallet(id, n)
                           ON wallet.n = ((g.n - 1) %% 2000) + 1
                         CROSS JOIN cash_in
                         RETURNING
@@ -142,8 +155,9 @@ def main(target_transfers=100000):
                         amount_paise
                     FROM new_transfers
                     """,
-                    (start, end),
+                    (start, end, seed_wallet_ids),
                 )
+
 
             # Recalculate balances only for seed wallets and the cash-in
             # account touched by this script—not every account in the DB.
